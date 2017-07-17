@@ -12,4 +12,11 @@ foreman-rake apipie:cache&
 # Migrate DB or populate it if it's empty
 foreman-rake db:migrate
 
+if [ ! -f /var/lib/puppet/ssl/.init_foreman ]; then
+    echo "####### Reset Forman admin password ######"
+    foreman-rake permissions:reset
+    echo "##########################################"
+    touch /var/lib/puppet/ssl/.init_foreman
+fi
+
 exec "$@"
