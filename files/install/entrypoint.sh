@@ -19,4 +19,9 @@ if [ ! -f /var/lib/puppet/ssl/.init_foreman ]; then
     touch /var/lib/puppet/ssl/.init_foreman
 fi
 
+echo "* 6 * * * root /usr/sbin/foreman-rake reports:expire days=7" >> /var/spool/cron/crontabs/root
+echo "* 4 * * * root /usr/sbin/foreman-rake reports:expire days=1 status=0" >> /var/spool/cron/crontabs/root
+
+service cron start
+
 exec "$@"
