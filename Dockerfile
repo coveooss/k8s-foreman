@@ -42,7 +42,7 @@ RUN foreman-installer \
       --no-enable-foreman-proxy \
       --no-enable-puppet \
       --foreman-ssl=false && \
-    apt-get install ruby-foreman-discovery && \
+    apt-get install ruby-foreman-default-hostgroup && \
     service foreman stop && \
     service apache2 stop && \
     systemctl disable foreman && \
