@@ -39,14 +39,15 @@ RUN foreman-installer \
       --foreman-db-manage-rake=false \
       --foreman-proxy-puppet=false \
       --foreman-proxy-puppetca=false \
-      --enable-foreman-plugin-default-hostgroup \
       --no-enable-foreman-proxy \
       --no-enable-puppet \
       --foreman-ssl=false && \
+    apt-get install ruby-foreman-discovery && \
     service foreman stop && \
     service apache2 stop && \
     systemctl disable foreman && \
-    systemctl disable apache2
+    systemctl disable apache2 
+
 
 # Clean apt cache
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
