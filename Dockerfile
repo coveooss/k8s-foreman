@@ -44,7 +44,6 @@ RUN foreman-installer \
       --no-enable-foreman-proxy \
       --no-enable-puppet \
       --foreman-ssl=false && \
-    ls -al /usr/share/foreman/config/settings.plugins.d/ && \
     service foreman stop && \
     service apache2 stop && \
     systemctl disable foreman && \
@@ -52,7 +51,7 @@ RUN foreman-installer \
 
 # Clean apt cache
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN ls -al /usr/share/foreman/config/settings.plugins.d/
+
 COPY files/install /install
 RUN chmod +x /install/entrypoint.sh
 
