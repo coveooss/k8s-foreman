@@ -32,6 +32,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nfs-common && \
 
 # make hostname -f work for foreman-installer
 RUN rm -f /usr/share/foreman-installer/checks/hostname.rb && export FACTER_fqdn="$HOSTNAME.docker.local"
+
 RUN foreman-installer \
       --foreman-version=$FOREMAN_VERSION \
       --foreman-db-type=mysql \
@@ -39,19 +40,19 @@ RUN foreman-installer \
       --foreman-db-manage-rake=false \
       --foreman-proxy-puppet=false \
       --foreman-proxy-puppetca=false \
+      --enable-foreman-plugin-default-hostgroup \
       --no-enable-foreman-proxy \
       --no-enable-puppet \
       --foreman-ssl=false && \
-    apt-get install ruby-foreman-default-hostgroup && \
+    ls -al /usr/share/foreman/config/settings.plugins.d/ && \
     service foreman stop && \
     service apache2 stop && \
     systemctl disable foreman && \
-    systemctl disable apache2 
-
+    systemctl disable apache2
 
 # Clean apt cache
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
+RUN ls -al /usr/share/foreman/config/settings.plugins.d/
 COPY files/install /install
 RUN chmod +x /install/entrypoint.sh
 
