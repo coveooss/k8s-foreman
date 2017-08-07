@@ -13,6 +13,8 @@ foreman-rake apipie:cache&
 foreman-rake db:migrate
 
 if [ ! -f /var/lib/puppet/ssl/.init_foreman ]; then
+    echo "####### Init Db ######"
+    foreman-rake db:seed
     echo "####### Reset Forman admin password ######"
     foreman-rake permissions:reset
     echo "##########################################"
