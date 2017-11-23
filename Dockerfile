@@ -8,7 +8,7 @@ ENV FOREMAN_VERSION 1.15.0-1
 
 # Install Supervisor
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor cron
+  DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor cron git golang
 
 # Create puppet user and group with defined UID and GID
 RUN useradd -u 1000 -U puppet
@@ -53,10 +53,14 @@ RUN foreman-installer \
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY files/install /install
-RUN chmod +x /install/entrypoint.sh
+RUN chmod +x /install/*.sh
+RUN /install/json_export.sh
 
 COPY files/supervisord /etc/supervisor
+COPY files/foreman/prometheus.rake /usr/share/foreman/lib/tasks
+
 EXPOSE 443
+EXPOSE 7979
 
 ENTRYPOINT ["/install/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
