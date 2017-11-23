@@ -27,6 +27,6 @@ echo "* 6 * * * root /usr/sbin/foreman-rake reports:expire days=7" >> /etc/cron.
 echo "* 4 * * * root /usr/sbin/foreman-rake reports:expire days=1 status=0" >> /etc/cron.d/foreman-task
 
 service cron restart
-/prometheus/prometheus-json-exporter/json_exporter --insecure $FORMAN_URL /prometheus/prometheus-json-exporter/config.yaml
+/prometheus/prometheus-json-exporter/json_exporter --insecure $FORMAN_URL /prometheus/prometheus-json-exporter/config.yaml&
 
 exec "$@"
