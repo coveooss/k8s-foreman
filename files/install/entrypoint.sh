@@ -17,6 +17,8 @@ if [ ! -f /var/lib/puppet/ssl/.init_foreman ]; then
     foreman-rake db:seed
     echo "####### Reset Forman admin password ######"
     foreman-rake permissions:reset
+    echo "####### Create account for prometheus exporter ######"
+    foreman-rake prometheus:create_user
     echo "##########################################"
     touch /var/lib/puppet/ssl/.init_foreman
 fi
@@ -25,5 +27,6 @@ echo "* 6 * * * root /usr/sbin/foreman-rake reports:expire days=7" >> /etc/cron.
 echo "* 4 * * * root /usr/sbin/foreman-rake reports:expire days=1 status=0" >> /etc/cron.d/foreman-task
 
 service cron restart
+/prometheus/prometheus-json-exporter/json_exporter --insecure $FOREMAN_URL /prometheus/prometheus-json-exporter/config.yaml&
 
 exec "$@"
