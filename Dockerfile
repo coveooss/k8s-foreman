@@ -4,46 +4,50 @@ LABEL maintainer "coveo"
 
 # Config for Foreman
 ENV FOREMAN_RELEASE 1.15
-ENV FOREMAN_VERSION 1.15.0-1
+ENV FOREMAN_VERSION 1.15.6-1
 
-# Install Supervisor
+# Add repo Foreman-plugin
+RUN echo "deb http://deb.theforeman.org/ plugins $FOREMAN_RELEASE" > /etc/apt/sources.list.d/foreman-plugins.list 
+
+# Add repo Foreman
+RUN  apt-key adv --fetch-keys http://deb.theforeman.org/pubkey.gpg  && \
+    echo "deb http://deb.theforeman.org/ xenial $FOREMAN_RELEASE" > /etc/apt/sources.list.d/foreman.list 
+
+# Get laset version
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor cron git golang
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
 # Create puppet user and group with defined UID and GID
 RUN useradd -u 1000 -U puppet
 
-# Install Foreman-Installer
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget && \
-    wget -q https://deb.theforeman.org/pubkey.gpg -O- | apt-key add - && \
-    echo "deb http://deb.theforeman.org/ xenial $FOREMAN_RELEASE" > /etc/apt/sources.list.d/foreman.list && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      foreman-installer tzdata
-
-# Install Foreman-plugin
-RUN echo "deb http://deb.theforeman.org/ plugins $FOREMAN_RELEASE" > /etc/apt/sources.list.d/foreman-plugins.list && \
-    apt-get update 
+# Install Supervisor
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    supervisor \
+    cron \
+    git \ 
+    golang \
+    foreman-installer \
+    tzdata \
+    nfs-common 
 
 # Prerequisite for EFS
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nfs-common && \
-    mkdir /install && \
+RUN mkdir /install && \
     mkdir -p /var/lib/puppet/ssl
 
 # make hostname -f work for foreman-installer
 RUN rm -f /usr/share/foreman-installer/checks/hostname.rb && export FACTER_fqdn="$HOSTNAME.docker.local"
 
 RUN foreman-installer \
-      --foreman-version=$FOREMAN_VERSION \
-      --foreman-db-type=mysql \
-      --foreman-db-manage=false \
-      --foreman-db-manage-rake=false \
-      --foreman-proxy-puppet=false \
-      --foreman-proxy-puppetca=false \
-      --enable-foreman-plugin-default-hostgroup \
-      --no-enable-foreman-proxy \
-      --no-enable-puppet \
-      --foreman-ssl=false && \
+    --foreman-version=$FOREMAN_VERSION \
+    --foreman-db-type=mysql \
+    --foreman-db-manage=false \
+    --foreman-db-manage-rake=false \
+    --foreman-proxy-puppet=false \
+    --foreman-proxy-puppetca=false \
+    --enable-foreman-plugin-default-hostgroup \
+    --no-enable-foreman-proxy \
+    --no-enable-puppet \
+    --foreman-ssl=false && \
     service foreman stop && \
     service apache2 stop && \
     systemctl disable foreman && \
