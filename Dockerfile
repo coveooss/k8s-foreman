@@ -58,14 +58,12 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY files/install /install
 RUN chmod +x /install/*.sh
-RUN /install/json_exporter.sh
 
 COPY files/supervisord /etc/supervisor
 COPY files/foreman/prometheus.rake /usr/share/foreman/lib/tasks/prometheus.rake
 COPY files/exporter_config.yaml /prometheus/prometheus-json-exporter/config.yaml
 
 EXPOSE 443
-EXPOSE 7979
 
 ENTRYPOINT ["/install/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
