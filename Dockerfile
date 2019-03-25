@@ -61,7 +61,6 @@ RUN chmod +x /install/*.sh
 
 COPY files/supervisord /etc/supervisor
 COPY files/foreman/prometheus.rake /usr/share/foreman/lib/tasks/prometheus.rake
-COPY files/exporter_config.yaml /prometheus/prometheus-json-exporter/config.yaml
 
 EXPOSE 443
 
